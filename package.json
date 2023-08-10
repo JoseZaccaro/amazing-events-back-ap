@@ -1,0 +1,24 @@
+{
+  "name": "amazing-events-back",
+  "version": "1.0.0",
+  "description": "Mi aplicacion de Amazing Events",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoseZaccaro/amazing-events-back-ap.git"
+  },
+  "author": "Jose Zaccaro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JoseZaccaro/amazing-events-back-ap/issues"
+  },
+  "homepage": "https://github.com/JoseZaccaro/amazing-events-back-ap#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
