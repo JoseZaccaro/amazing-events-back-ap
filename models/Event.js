@@ -1,9 +1,8 @@
 import { Schema, model } from "mongoose";
 
 const eventSchema = Schema({
-    // _id: 64daaf14f945b21e993896ae,
     name: { type: String, required: true },
-    category: { type: String, required: true },
+    category: { type: Schema.Types.ObjectId, ref:'category', required: true },
     date: { type: String, required: true },
     description: { type: String },
     image: { type: String, required: true },
