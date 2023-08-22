@@ -1,15 +1,21 @@
 import eventos from '../eventos.js';
 import Event from '../models/Event.js';
+import Category from '../models/Category.js';
 
 const eventsController = {
     getAllEvents: async (req, res, next) => {
+
+        // query params
+
         let eventos;
         let error = null
         let success = true;
         try {
-            eventos = await Event.find()
-            throw new Error("Error creado por mi")
-            
+            eventos = await Event.find().populate( {
+                path : 'category',
+                select : 'category'
+            } )
+           /*  throw new Error("Error creado por mi") */
             res.json({
                 response: eventos,
                 success,
@@ -57,7 +63,10 @@ const eventsController = {
 
             // await newEvent.save()
             // console.log(newEvent)
-            evento = await Event.create(req.body)
+            const category = await Category.findOne( { category : req.body.category } )
+            const query = { ...req.body }
+            query.category = category._id
+            evento = await Event.create(query)
             console.log(evento);
         } catch (err) {
             console.log(err)
@@ -70,7 +79,42 @@ const eventsController = {
             success,
             error
         })
-    }
+    },
+
+    updateOneEvent : async(req, res, next) => {
+        const { id } = req.params
+        let evento;
+        let success = true;
+        try {
+            evento = await Event.findOneAndUpdate( {_id: id}, req.body, { new: true } )
+            res.json({
+                response: evento,
+                success
+            })
+        } catch (err) {
+            success = false;
+            next(err)
+        }
+        
+    },
+    
+    deleteOneEvent : async(req, res, next) => {
+        const { id } = req.params
+        let evento;
+        let success = true;
+        try {
+            evento = await Event.findOneAndDelete( {_id: id} )
+            res.json({
+                response: evento,
+                success
+            })
+        } catch (err) {
+            success = false;
+            next(err)
+        }
+    },
+
+
 }
 
 export default eventsController;
