@@ -30,6 +30,35 @@ const authController = {
             console.log(error);
             next(error)
         }
+    },
+
+    signIn : async (req, res, next) => {
+        try {
+
+            let { email, password } = req.body
+
+            const userInDB = await User.findOne( {email} )
+
+            if( !userInDB ){
+                throw new Error( "No user exists with this email " )
+            }
+
+            let passwordValidated = bcrypt.compareSync( password, userInDB.password )
+
+            if( !passwordValidated ){
+                throw new Error( "The email/password is incorrect" )
+            }
+
+            return res.status(200).json({
+                success: true,
+                userData: userInDB,
+                message: 'Sign in successfully'
+            })
+
+        } catch (error) {
+            console.log(error);
+            next(error)
+        }
     }
 
 }
