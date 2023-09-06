@@ -1,6 +1,6 @@
 import User from "../models/User.js"
 import bcrypt from 'bcryptjs'
-
+import jwt from 'jsonwebtoken'
 const authController = {
 
     signUp: async (req, res, next) => {
@@ -14,13 +14,14 @@ const authController = {
 
             const newUser = await User.create(body)
 
-            const esIgual = bcrypt.compareSync(req.body.password, passwordHash)
+            /*  const esIgual = bcrypt.compareSync(req.body.password, passwordHash) */
 
-            console.log(esIgual);
-
+            /*      console.log(esIgual); */
+            const token = jwt.sign( { email : newUser.email, photo: newUser.photo }, process.env.SECRET_KEY, { expiresIn:'1h' } )
             return res.status(201).json({
                 success: true,
                 userData: newUser,
+                token : token,
                 message: 'Sign up successfully'
             })
 
@@ -35,9 +36,9 @@ const authController = {
     signIn : async (req, res, next) => {
         try {
 
-            let { email, password } = req.body
+            let { email:emailBody, password } = req.body
 
-            const userInDB = await User.findOne( {email} )
+            const userInDB = await User.findOne( {email:emailBody} )
 
             if( !userInDB ){
                 throw new Error( "No user exists with this email " )
@@ -49,9 +50,12 @@ const authController = {
                 throw new Error( "The email/password is incorrect" )
             }
 
+            let { email, photo, age } = userInDB
+            const token = jwt.sign( { email, photo }, process.env.SECRET_KEY, { expiresIn:'1h' } )
             return res.status(200).json({
                 success: true,
-                userData: userInDB,
+                userData: { email, photo, age },
+                token: token,
                 message: 'Sign in successfully'
             })
 
@@ -59,6 +63,15 @@ const authController = {
             console.log(error);
             next(error)
         }
+    },
+    loginWithToken : (req, res) => {
+        const { email, photo, name} = req.user
+        res.status(200).json({
+            success: true,
+            userData: { email, photo, name },
+            message: 'Sign in successfully',
+           /*  body: req.body */
+        })
     }
 
 }
